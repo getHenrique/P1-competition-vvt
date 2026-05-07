@@ -1,0 +1,19 @@
+{
+  "name": "competicao-vvt",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Competição prática de testes unitários com Vitest — Sistema de Empréstimo de Biblioteca",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@vitest/coverage-v8": "^4.1.5",
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.5",
+    "vitest-mock-extended": "^3.1.1"
+  }
+}
