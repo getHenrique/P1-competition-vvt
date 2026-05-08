@@ -134,7 +134,7 @@ describe('LibraryService', () => {
       daysLate: 5,
     });
 
-    expect(service.returnBook('m1', 'b1', today).feeInCents).toBe(999);
+    expect(service.returnBook('m1', 'b1', today).feeInCents).toBe(999);  // VALOR 999 MUITO ALTO PARA TAXA SE COMPARADO COM O DA TABELA
   });
 
   it('borrowBook não lança erro com inputs válidos', () => {
