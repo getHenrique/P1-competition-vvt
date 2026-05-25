@@ -288,7 +288,32 @@ describe('LibraryService', () => {
 
   it('Ao não encontrar empréstimo feito por membro ao tentar retornar livro, devolve razão \'NOT_BORROWER\'', () => {//NOVO - Passou
         
+    //Arrange
+    const loan: Loan = {
+      memberId: 'm1',
+      bookId: 'b1',
+      borrowedAt: new Date('2025-06-01T10:00:00Z'),
+      dueAt: new Date('2025-06-08T10:00:00Z'),
+      returnedAt: null,
+    };
+    const repo = mock<LibraryRepository>()
+    repo.findActiveLoanByBookId.mockReturnValue(loan);//Mock loan
+    repo.findBookById.mockReturnValue(makeBook());//Mock book
+    const service = new LibraryService(repo);
 
+    //Act
+    const result = service.returnBook(
+      'm2',
+      'b1',
+      new Date('2025-06-13T10:00:00Z'),//5 dias de atraso
+    );
+
+    //Assert
+    expect(result.reason).toBe('NOT_BORROWER');
+    expect(result.success).toBe(false);
+    expect(result.feeInCents).toBe(0);
+    expect(result.daysLate).toBe(0);
+   
 
   });
 
