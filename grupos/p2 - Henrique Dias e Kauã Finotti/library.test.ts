@@ -203,8 +203,30 @@ describe('LibraryService', () => {
 
   it('Retorno na data de vencimento tem tarifa de 0 centavos', () => {//NOVO - Passou
     
+    //Arrange
+    const loan: Loan = {
+      memberId: 'm1',
+      bookId: 'b1',
+      borrowedAt: new Date('2025-06-01T10:00:00Z'),
+      dueAt: today,
+      returnedAt: null,
+    };
+    const repo = mock<LibraryRepository>()
+    repo.findActiveLoanByBookId.mockReturnValue(loan);//Mock loan
+    repo.findBookById.mockReturnValue(makeBook());//Mock book
+    const service = new LibraryService(repo);
 
+    //Act
+    const result = service.returnBook(
+      'm1',
+      'b1',
+      today,//0 dias de atraso
+    );
 
+    //Assert
+    expect(result.success).toBe(true);
+    expect(result.daysLate).toBe(0);
+    expect(result.feeInCents).toBe(0);
 
   });
 
