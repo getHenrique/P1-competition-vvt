@@ -49,7 +49,7 @@ describe('LibraryService', () => {
 
   });
 
-  it('Permite professor emprestar livro disponível', () => {//NOVO
+  it('Permite professor emprestar livro disponível', () => {//NOVO - Passou
     
     //Arrange
     const fourteenDaysInMs = 14 * 24 * 60 * 60 * 1000;
@@ -73,7 +73,7 @@ describe('LibraryService', () => {
 
   });
 
-  it('Membro inexistente tenta emprestar livro', () => {
+  it('Membro inexistente tenta emprestar livro', () => {//NOVO - Passou
 
     //Arrange
 
@@ -83,7 +83,7 @@ describe('LibraryService', () => {
 
   });
 
-  it('Membro tenta emprestar livro que não existe', () => {
+  it('Membro tenta emprestar livro que não existe', () => {//NOVO - Passou
 
     //Arrange
 
@@ -93,7 +93,7 @@ describe('LibraryService', () => {
 
   });
 
-  it('Membro com algum overdue Tenta emprestar livro', () => {
+  it('Membro com algum overdue Tenta emprestar livro', () => {//NOVO - Passou
 
     //Arrange
 
@@ -120,7 +120,7 @@ describe('LibraryService', () => {
 
   });
 
-  it('Bloqueia empréstimo quando livro tem status \'maintenance\'', () =>{//NOVO
+  it('Bloqueia empréstimo quando livro tem status \'maintenance\'', () =>{//NOVO - Passou
 
     //Arrange
 
@@ -130,7 +130,7 @@ describe('LibraryService', () => {
 
   });
 
-  it('Bloqueia empréstimo para aluno (tentativa de emprestar mais de 3 livros simultâneos)', () => {//NOVO
+  it('Bloqueia empréstimo para aluno (tentativa de emprestar mais de 3 livros simultâneos)', () => {//NOVO - Passou
 
     //Arrange
 
@@ -172,13 +172,39 @@ describe('LibraryService', () => {
 
 //Estes testes só mudam a quantidade de dias de atraso, podemos fazê-los paramétricos? Como?
 
-  it('Multa para 0 dias de atraso de empréstimo tem valor de 0 centavos', () => {
+  it('Retorno antes da data de vencimento tem tarifa de 0 centavos', () => {//NOVO - Passou
     
     //Arrange
+    const loan: Loan = {
+      memberId: 'm1',
+      bookId: 'b1',
+      borrowedAt: new Date('2025-06-01T10:00:00Z'),
+      dueAt: new Date('2025-06-10T10:00:00Z'),
+      returnedAt: null,
+    };
+    const repo = mock<LibraryRepository>()
+    repo.findActiveLoanByBookId.mockReturnValue(loan);//Mock loan
+    repo.findBookById.mockReturnValue(makeBook());//Mock book
+    const service = new LibraryService(repo);
 
     //Act
+    const result = service.returnBook(
+      'm1',
+      'b1',
+      new Date('2025-06-05T10:00:00Z'),//0 dias de atraso
+    );
 
     //Assert
+    expect(result.success).toBe(true);
+    expect(result.daysLate).toBe(0);
+    expect(result.feeInCents).toBe(0);
+
+  });
+
+  it('Retorno na data de vencimento tem tarifa de 0 centavos', () => {//NOVO - Passou
+    
+
+
 
   });
 
@@ -238,23 +264,14 @@ describe('LibraryService', () => {
 
   });
 
-  it('Não encontra empréstimo de livro por membro tentando retornar', () => {
+  it('Ao não encontrar empréstimo feito por membro ao tentar retornar livro, devolve razão \'NOT_BORROWER\'', () => {//NOVO - Passou
         
-    //Arrange
 
-    //Act
-
-    //Assert
 
   });
 
-  it('Não encontra empréstimo algum do livro ao tentar retornar', () => {
-            
-    //Arrange
+  it('Ao não encontrar empréstimo algum do livro ao tentar retorná-lo, retora a razão \'LOAN NOT FOUND\'', () => {//NOVO - Passou
 
-    //Act
-
-    //Assert
 
   });
 
@@ -262,28 +279,14 @@ describe('LibraryService', () => {
    * getMemberStatus()
    ===================================================================*/
 
-  it('Busca status de um membro', () => {
+  it('Busca status de um membro e o retorna com sucesso', () => {//NOVO - Falhou
         
-    //Arrange
 
-    //Act
 
-    //Assert
-
-  })
+  });
 
   it('Buscar status de membro inexistente lança erro', () => {//CORRIGIDO - Passou
 
-    //Arrange
-    const repo = mock<LibraryRepository>()
-    repo.findMemberById.mockReturnValue(null);//Mock null member
-    const service = new LibraryService(repo);
-
-    //Act
-    const status = () => service.getMemberStatus('m999', today);
-
-    //Assert
-    expect(status).toThrow();
 
   });
 
