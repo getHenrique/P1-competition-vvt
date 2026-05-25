@@ -29,6 +29,7 @@ describe('LibraryService', () => {
   it('Permite estudante emprestar livro disponível', () => {//OK - Passou
     
     //Arrange
+    const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
     const repo = mock<LibraryRepository>();
     repo.findMemberById.mockReturnValue(makeMember());//Mock student
     repo.findBookById.mockReturnValue(makeBook());//Mock book
@@ -40,8 +41,65 @@ describe('LibraryService', () => {
 
     //Assert
     expect(result.success).toBe(true);
+    expect(result.loan?.borrowedAt).toStrictEqual(today);
+    expect(result.loan?.dueAt).toStrictEqual(new Date(today.getTime() + sevenDaysInMs));
     expect(result.loan?.memberId).toBe('m1');
     expect(result.loan?.bookId).toBe('b1');
+    expect(repo.findBookById('b1')?.status).toBe('borrowed');
+
+  });
+
+  it('Permite professor emprestar livro disponível', () => {//OK - Passou
+    
+    //Arrange
+    const fourteenDaysInMs = 14 * 24 * 60 * 60 * 1000;
+    const prof = makeMember({ id: 'p1', type: 'professor' });
+    const repo = mock<LibraryRepository>();
+    repo.findMemberById.mockReturnValue(prof);//Mock professor
+    repo.findBookById.mockReturnValue(makeBook());//Mock book
+    repo.findActiveLoansByMemberId.mockReturnValue([]);//Mock active loans for student
+    const service = new LibraryService(repo);
+
+    //Act
+    const result = service.borrowBook('m1', 'b1', today);
+
+    //Assert
+    expect(result.success).toBe(true);
+    expect(result.loan?.borrowedAt).toStrictEqual(today);
+    expect(result.loan?.dueAt).toStrictEqual(new Date(today.getTime() + fourteenDaysInMs));
+    expect(result.loan?.memberId).toBe('m1');
+    expect(result.loan?.bookId).toBe('b1');
+    expect(repo.findBookById('b1')?.status).toBe('borrowed');
+
+  });
+
+  it('Membro inexistente tenta emprestar livro', () => {
+
+    //Arrange
+
+    //Act
+
+    //Assert
+
+  });
+
+  it('Membro tenta emprestar livro que não existe', () => {
+
+    //Arrange
+
+    //Act
+
+    //Assert
+
+  });
+
+  it('Membro com algum overdue Tenta emprestar livro', () => {
+
+    //Arrange
+
+    //Act
+
+    //Assert
 
   });
 
@@ -107,10 +165,6 @@ describe('LibraryService', () => {
     expect(result.reason).toBe('LIMIT_REACHED');
 
   });
-
-  //Membro inexistente tenta emprestar livro
-  //Membro tenta emprestar livro que não existe
-  //Membro com algum overdue Tenta emprestar livro
 
   /**===================================================================
    * returnBook()
