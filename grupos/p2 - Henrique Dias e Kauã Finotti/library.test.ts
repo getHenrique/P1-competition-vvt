@@ -49,7 +49,7 @@ describe('LibraryService', () => {
 
   });
 
-  it('Permite professor emprestar livro disponível', () => {//OK - Passou
+  it('Permite professor emprestar livro disponível', () => {//NOVO
     
     //Arrange
     const fourteenDaysInMs = 14 * 24 * 60 * 60 * 1000;
@@ -170,7 +170,9 @@ describe('LibraryService', () => {
    * returnBook()
    ===================================================================*/
 
-  it('Multa para 0 dias de atraso tem valor de 0 centabos', () => {
+//Estes testes só mudam a quantidade de dias de atraso, podemos fazê-los paramétricos? Como?
+
+  it('Multa para 0 dias de atraso de empréstimo tem valor de 0 centavos', () => {
     
     //Arrange
 
@@ -180,17 +182,7 @@ describe('LibraryService', () => {
 
   });
 
-  it('Calcula multa de 1 dia de atraso', () => {
-    
-    //Arrange
-
-    //Act
-
-    //Assert
-
-  })
-
-  it('Calcula multa de 2 dias atrasado', () => {//OK - Passou
+  it('Ao retornar empréstimo, calcula multa de 2 dias atrasado', () => {//OK - Passou
     
     //Arrange
     const loan: Loan = {
@@ -219,9 +211,7 @@ describe('LibraryService', () => {
 
   });
 
-  //multas para -1, 1, 3 e 4 dias
-
-  it('calcula multa de 5 dias atrasado', () => {//CORRIGIDO - Passou
+  it('Ao retornar empréstimo, calcula multa de 5 dias atrasado', () => {//CORRIGIDO - Passou
 
     //Arrange
     const loan: Loan = {
@@ -248,11 +238,35 @@ describe('LibraryService', () => {
 
   });
 
+  it('Não encontra empréstimo de livro por membro tentando retornar', () => {
+        
+    //Arrange
+
+    //Act
+
+    //Assert
+
+  });
+
+  it('Não encontra empréstimo algum do livro ao tentar retornar', () => {
+
+  });
+
   /**===================================================================
    * getMemberStatus()
    ===================================================================*/
 
-  it('getMemberStatus para membro inexistente', () => {//CORRIGIDO - Passou
+  it('Busca status de um membro', () => {
+        
+    //Arrange
+
+    //Act
+
+    //Assert
+
+  })
+
+  it('Buscar status de membro inexistente lança erro', () => {//CORRIGIDO - Passou
 
     //Arrange
     const repo = mock<LibraryRepository>()
