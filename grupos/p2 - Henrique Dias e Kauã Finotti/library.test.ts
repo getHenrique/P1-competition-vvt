@@ -313,12 +313,28 @@ describe('LibraryService', () => {
     expect(result.success).toBe(false);
     expect(result.feeInCents).toBe(0);
     expect(result.daysLate).toBe(0);
-   
 
   });
 
-  it('Ao não encontrar empréstimo algum do livro ao tentar retorná-lo, retora a razão \'LOAN NOT FOUND\'', () => {//NOVO - Passou
+  it('Ao não encontrar empréstimo algum do livro ao tentar retorná-lo, retora a razão \'LOAN_NOT_FOUND\'', () => {//NOVO - Passou
 
+    //Arrange
+    const repo = mock<LibraryRepository>()
+    repo.findBookById.mockReturnValue(makeBook());//Mock book
+    const service = new LibraryService(repo);
+
+    //Act
+    const result = service.returnBook(
+      'm2',
+      'b1',
+      new Date('2025-06-13T10:00:00Z'),//5 dias de atraso
+    );
+
+    //Assert
+    expect(result.reason).toBe('LOAN_NOT_FOUND');
+    expect(result.success).toBe(false);
+    expect(result.feeInCents).toBe(0);
+    expect(result.daysLate).toBe(0);
 
   });
 
