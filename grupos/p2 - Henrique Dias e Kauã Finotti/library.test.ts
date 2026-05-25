@@ -347,6 +347,7 @@ describe('LibraryService', () => {
     //Arrange
     const repo = mock<LibraryRepository>()
     repo.findMemberById.mockReturnValue(makeMember());//Mock member
+
     const service = new LibraryService(repo);
 
     //Act
@@ -355,7 +356,7 @@ describe('LibraryService', () => {
     //Assert
     expect(status.activeLoans).toBe(0);
     expect(status.overdueLoans).toBe(0);
-    expect(status.remainingSlots).toBe(0);
+    expect(status.remainingSlots).toBe(3);
     expect(status.canBorrow).toBe(true);
 
   });
@@ -371,8 +372,7 @@ describe('LibraryService', () => {
     const status = () => service.getMemberStatus('m999', today);
 
     //Assert
-    expect(status).toThrow();
-
+    expect(status).toThrow('MEMBER_NOT_FOUND');
 
   });
 
