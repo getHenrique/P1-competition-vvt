@@ -22,17 +22,33 @@ const makeBook = (overrides: Partial<Book> = {}): Book => ({
 
 describe('LibraryService', () => {
   
-  /**
+  /**===================================================================
    * borrowBook()
-   */
+   ===================================================================*/
 
-  it('permite student emprestar livro disponível', () => {
+     it('Com inputs válidos, borrowBook não lança erros', () => {// INCOMPLETO
 
     //Arrange
     const repo = mock<LibraryRepository>();
     repo.findMemberById.mockReturnValue(makeMember());
     repo.findBookById.mockReturnValue(makeBook());
     repo.findActiveLoansByMemberId.mockReturnValue([]);
+    const service = new LibraryService(repo);
+
+    //Act
+
+    //Assert
+    expect(() => service.borrowBook('m1', 'b1', today)).not.toThrow();
+
+  });
+
+  it('Permite estudante emprestar livro disponível', () => {//OK - Passou
+    
+    //Arrange
+    const repo = mock<LibraryRepository>();
+    repo.findMemberById.mockReturnValue(makeMember());//Mock student
+    repo.findBookById.mockReturnValue(makeBook());//Mock book
+    repo.findActiveLoansByMemberId.mockReturnValue([]);//Mock active loans for student
     const service = new LibraryService(repo);
 
     //Act
@@ -45,12 +61,12 @@ describe('LibraryService', () => {
 
   });
 
-  it('bloqueia empréstimo quando livro está borrowed', () => {
+  it('Bloqueia empréstimo quando livro tem status \'borrowed\'', () => {//OK - Passou
 
     //Arrange
     const repo = mock<LibraryRepository>();
-    repo.findMemberById.mockReturnValue(makeMember({ id: 'm2', name: 'Bob' }));
-    repo.findBookById.mockReturnValue(makeBook({ status: 'borrowed' }));
+    repo.findMemberById.mockReturnValue(makeMember({ id: 'm2', name: 'Bob' }));//Mock student
+    repo.findBookById.mockReturnValue(makeBook({ status: 'borrowed' }));//Mock
     const service = new LibraryService(repo);
 
     //Act
@@ -62,7 +78,9 @@ describe('LibraryService', () => {
 
   });
 
-  it('retorna algo ao emprestar', () => {
+  //Bloqueia empréstimo quando livro tem status \'borrowed\'
+
+  it('retorna algo ao emprestar', () => {//MORTO - EXCLUIR
 
     //Arrange
     const repo = mock<LibraryRepository>();
@@ -79,7 +97,9 @@ describe('LibraryService', () => {
 
   });
 
-  it('professor pode emprestar até 3 livros', () => {
+  // Bloqueia empréstimo para aluno (tentativa de emprestar mais de 3 livros simultâneos)
+  
+  it('Bloqueia empréstimo para professor (tentativa de emprestar mais de 3 livros simultâneos)', () => {//INCORRETO - Professor pode emprestar até 5 livros
 
     //Arrange
     const prof = makeMember({ id: 'p1', type: 'professor' });
@@ -89,9 +109,9 @@ describe('LibraryService', () => {
       { memberId: 'p1', bookId: 'b3', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
     ];
     const repo = mock<LibraryRepository>();
-    repo.findMemberById.mockReturnValue(prof);
-    repo.findBookById.mockReturnValue(makeBook({ id: 'b4' }));
-    repo.findActiveLoansByMemberId.mockReturnValue(activeLoans);
+    repo.findMemberById.mockReturnValue(prof);//Mock professor
+    repo.findBookById.mockReturnValue(makeBook({ id: 'b4' }));//Mock book
+    repo.findActiveLoansByMemberId.mockReturnValue(activeLoans);//Mock active loans for professor
     const service = new LibraryService(repo);
 
     //Act
@@ -103,26 +123,14 @@ describe('LibraryService', () => {
 
   });
 
-  it('borrowBook não lança erro com inputs válidos', () => {
 
-    //Arrange
-    const repo = mock<LibraryRepository>();
-    repo.findMemberById.mockReturnValue(makeMember());
-    repo.findBookById.mockReturnValue(makeBook());
-    repo.findActiveLoansByMemberId.mockReturnValue([]);
-    const service = new LibraryService(repo);
-
-    //Assert
-    expect(() => service.borrowBook('m1', 'b1', today)).not.toThrow();
-
-  });
-
-
-  /**
+  /**===================================================================
    * returnBook()
-   */
+   ===================================================================*/
 
-  it('calcula multa de 2 dias atrasado para student', () => {
+//multa para 0 dias
+
+  it('Calcula multa de 2 dias atrasado para student', () => {//OK - Passou
     
     //Arrange
     const loan: Loan = {
@@ -133,25 +141,27 @@ describe('LibraryService', () => {
       returnedAt: null,
     };
     const repo = mock<LibraryRepository>();
-    repo.findActiveLoanByBookId.mockReturnValue(loan);
-    repo.findBookById.mockReturnValue(makeBook());
+    repo.findActiveLoanByBookId.mockReturnValue(loan);//Mock loan
+    repo.findBookById.mockReturnValue(makeBook());//Mock book
     const service = new LibraryService(repo);
 
     //Act
     const result = service.returnBook(
       'm1',
       'b1',
-      new Date('2025-06-10T10:00:00Z'),
+      new Date('2025-06-10T10:00:00Z'),//2 dias de atraso
     );
 
     //Assert
     expect(result.success).toBe(true);
     expect(result.daysLate).toBe(2);
-    expect(result.feeInCents).toBe(400);
+    expect(result.feeInCents).toBe(400);//2 * 200 = 400
 
   });
 
-  it('returnBook calcula multa', () => {
+  //multas para -1, 1, 3 e 4 dias
+
+  it('returnBook calcula multa', () => {//INCOMPLETO - INÚTIL
 
     //Arrange
     const service = mock<LibraryService>();
@@ -166,7 +176,7 @@ describe('LibraryService', () => {
     
   });
 
-    it('calcula multa de 5 dias atrasado', () => {
+  it('calcula multa de 5 dias atrasado', () => {//INCORRETO
 
     //Arrange
     const loan: Loan = {
@@ -177,27 +187,27 @@ describe('LibraryService', () => {
       returnedAt: null,
     };
     const repo = mock<LibraryRepository>();
-    repo.findActiveLoanByBookId.mockReturnValue(loan);
-    repo.findBookById.mockReturnValue(makeBook());
+    repo.findActiveLoanByBookId.mockReturnValue(loan);//Mock loan
+    repo.findBookById.mockReturnValue(makeBook());//Mock book
     const service = new LibraryService(repo);
 
     //Act
     const result = service.returnBook(
       'm1',
       'b1',
-      new Date('2025-06-13T10:00:00Z'),
+      new Date('2025-06-13T10:00:00Z'),//5 dias de atraso
     );
 
     //Assert
-    expect(result.feeInCents).toBe(1000);
+    expect(result.feeInCents).toBe(1000);//3 * 200 + 2 * 500 = 1600
 
   });
 
-  /**
+  /**===================================================================
    * getMemberStatus()
-   */
+   ===================================================================*/
 
-  it('getMemberStatus retorna um objeto', () => {
+  it('getMemberStatus retorna um objeto', () => {//OK, ÚTIL?
 
     //Arrange
     const repo = mock<LibraryRepository>();
@@ -213,7 +223,7 @@ describe('LibraryService', () => {
 
   });
 
-  it('canBorrow é booleano', () => {
+  it('canBorrow é booleano', () => {//OK, ÚTIL? NÃO
 
     //Arrage
     const repo = mock<LibraryRepository>();
@@ -229,11 +239,11 @@ describe('LibraryService', () => {
 
   });
 
-  it('getMemberStatus para membro inexistente', () => {
+  it('getMemberStatus para membro inexistente', () => {//INCORRETO
 
     //Arrange
     const repo = mock<LibraryRepository>();
-    repo.findMemberById.mockReturnValue(null);
+    repo.findMemberById.mockReturnValue(null);//Mock null member
     const service = new LibraryService(repo);
 
     //Act
@@ -241,20 +251,20 @@ describe('LibraryService', () => {
 
     //Assert
     expect(status.activeLoans).toBe(0);
-    
+
   });
 
-  /**
+  /**===================================================================
    * getlimit()
-   */
-  /**
+   ===================================================================*/
+  /**===================================================================
    * getDueDays()
-   */
-  /**
+   ===================================================================*/
+  /**===================================================================
    * computeDaysLate()
-   */
-  /**
+   ===================================================================*/
+  /**===================================================================
    * computeFee()
-   */
+   ===================================================================*/
 
 });
