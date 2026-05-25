@@ -344,11 +344,34 @@ describe('LibraryService', () => {
 
   it('Busca status de um membro e o retorna com sucesso', () => {//NOVO - Falhou
         
+    //Arrange
+    const repo = mock<LibraryRepository>()
+    repo.findMemberById.mockReturnValue(makeMember());//Mock member
+    const service = new LibraryService(repo);
 
+    //Act
+    const status = service.getMemberStatus('m1', today);
+
+    //Assert
+    expect(status.activeLoans).toBe(0);
+    expect(status.overdueLoans).toBe(0);
+    expect(status.remainingSlots).toBe(0);
+    expect(status.canBorrow).toBe(true);
 
   });
 
   it('Buscar status de membro inexistente lança erro', () => {//CORRIGIDO - Passou
+
+       //Arrange
+    const repo = mock<LibraryRepository>()
+    repo.findMemberById.mockReturnValue(null);//Mock null member
+    const service = new LibraryService(repo);
+
+    //Act
+    const status = () => service.getMemberStatus('m999', today);
+
+    //Assert
+    expect(status).toThrow();
 
 
   });
