@@ -62,9 +62,25 @@ describe('LibraryService', () => {
 
   });
 
-  //Bloqueia empréstimo quando livro tem status \'borrowed\'
+  it('Bloqueia empréstimo quando livro tem status \'maintenance\'', () =>{//NOVO
 
-  // Bloqueia empréstimo para aluno (tentativa de emprestar mais de 3 livros simultâneos)
+    //Arrange
+
+    //Act
+
+    //Assert
+
+  });
+
+  it('Bloqueia empréstimo para aluno (tentativa de emprestar mais de 3 livros simultâneos)', () => {//NOVO
+
+    //Arrange
+
+    //Act
+
+    //Assert
+
+  });
   
   it('Bloqueia empréstimo para professor (tentativa de emprestar mais de 3 livros simultâneos)', () => {//CORRIGIDO - Passou
 
@@ -92,14 +108,35 @@ describe('LibraryService', () => {
 
   });
 
+  //Membro inexistente tenta emprestar livro
+  //Membro tenta emprestar livro que não existe
+  //Membro com algum overdue Tenta emprestar livro
 
   /**===================================================================
    * returnBook()
    ===================================================================*/
 
-//multa para 0 dias
+  it('Multa para 0 dias de atraso tem valor de 0 centabos', () => {
+    
+    //Arrange
 
-  it('Calcula multa de 2 dias atrasado para student', () => {//OK - Passou
+    //Act
+
+    //Assert
+
+  });
+
+  it('Calcula multa de 1 dia de atraso', () => {
+    
+    //Arrange
+
+    //Act
+
+    //Assert
+
+  })
+
+  it('Calcula multa de 2 dias atrasado', () => {//OK - Passou
     
     //Arrange
     const loan: Loan = {
@@ -160,22 +197,6 @@ describe('LibraryService', () => {
   /**===================================================================
    * getMemberStatus()
    ===================================================================*/
-
-  it('getMemberStatus retorna um objeto', () => {//OK, ÚTIL?
-
-    //Arrange
-    const repo = mock<LibraryRepository>()
-    repo.findMemberById.mockReturnValue(makeMember());
-    repo.findActiveLoansByMemberId.mockReturnValue([]);
-    const service = new LibraryService(repo);
-
-    //Act
-    const status = service.getMemberStatus('m1', today);
-
-    //Assert
-    expect(typeof status).toBe('object');
-
-  });
 
   it('getMemberStatus para membro inexistente', () => {//CORRIGIDO - Passou
 
