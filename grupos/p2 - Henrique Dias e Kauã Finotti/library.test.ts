@@ -85,12 +85,13 @@ describe('LibraryService', () => {
 
     });
 
-    it('Bloqueia empréstimo quando livro tem status \'borrowed\'', () => {//OK - Passou
+    it.each([{bookStatus: 'maintenance'}, {bookStatus: 'borrowed'}] as {bookStatus: 'maintenance' | 'borrowed'}[])
+    ('Bloqueia empréstimo quando livro tem status $bookStatus', ({bookStatus}) => {//OK - Passou
       //elegivel para teste parametrico(available, maintenance ou borrowed)
       //Arrange
       const repo = mock<LibraryRepository>();
       repo.findMemberById.mockReturnValue(makeMember({ id: 'm2', name: 'Bob' }));//Mock student
-      repo.findBookById.mockReturnValue(makeBook({ status: 'borrowed' }));//Mock
+      repo.findBookById.mockReturnValue(makeBook({ status: bookStatus }));//Mock
       const service = new LibraryService(repo);
 
       //Act
