@@ -87,7 +87,7 @@ describe('LibraryService', () => {
 
     it.each([{bookStatus: 'maintenance'}, {bookStatus: 'borrowed'}] as {bookStatus: 'maintenance' | 'borrowed'}[])
     ('Bloqueia empréstimo quando livro tem status $bookStatus', ({bookStatus}) => {//OK - Passou
-      //elegivel para teste parametrico(available, maintenance ou borrowed)
+
       //Arrange
       const repo = mock<LibraryRepository>();
       repo.findMemberById.mockReturnValue(makeMember({ id: 'm2', name: 'Bob' }));//Mock student
@@ -103,17 +103,18 @@ describe('LibraryService', () => {
 
     });
 
-    it('Membro com algum overdue Tenta emprestar livro', () => {//NOVO - Passou
+    it.each([{type: 'student', dueDate: new Date('2025-05-10T10:00:00Z')}, {type: 'professor', dueDate: new Date('2025-05-20T10:00:00Z')}] as {type: 'student' | 'professor', dueDate: Date}[])
+    ('$type com algum overdue Tenta emprestar livro', ({type, dueDate}) => {//NOVO - Passou
 
       //Arrange
       const repo = mock<LibraryRepository>();
-      repo.findMemberById.mockReturnValue(makeMember());//Mock student
+      repo.findMemberById.mockReturnValue(makeMember({ type: type }));//Mock student
       repo.findBookById.mockReturnValue(makeBook());//Mock book
       const overdueLoan: Loan = {
         memberId: 'm1',
         bookId: 'b1',
         borrowedAt: new Date('2025-05-01T10:00:00Z'),
-        dueAt: new Date('2025-05-08T10:00:00Z'),
+        dueAt: dueDate,
         returnedAt: null,
       };
       repo.findActiveLoansByMemberId.mockReturnValue([overdueLoan]);//Mock active loans with one overdue
@@ -127,25 +128,7 @@ describe('LibraryService', () => {
       expect(result.reason).toBe('HAS_OVERDUE');
 
     });
-
-    it('Bloqueia empréstimo quando livro tem status \'maintenance\'', () =>{//NOVO - Passou
-      //elegivel para teste parametrico(available, maintenance ou borrowed)
-
-      //Arrange
-      const repo = mock<LibraryRepository>();
-      repo.findMemberById.mockReturnValue(makeMember({ id: 'm2', name: 'Bob' }));//Mock student
-      repo.findBookById.mockReturnValue(makeBook({ status: 'maintenance' }));//Mock
-      const service = new LibraryService(repo);
-
-      //Act
-      const result = service.borrowBook('m2', 'b1', today);
-
-      //Assert
-      expect(result.success).toBe(false);
-      expect(result.reason).toBe('BOOK_NOT_AVAILABLE');
-
-    });
-
+    
     it('Bloqueia empréstimo para aluno (tentativa de emprestar mais de 3 livros simultâneos)', () => {//NOVO - Passou
       //elegivel para teste parametrico (student ou professor)
 
