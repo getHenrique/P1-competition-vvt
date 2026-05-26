@@ -128,59 +128,38 @@ describe('LibraryService', () => {
       expect(result.reason).toBe('HAS_OVERDUE');
 
     });
-    
-    it('Bloqueia empréstimo para aluno (tentativa de emprestar mais de 3 livros simultâneos)', () => {//NOVO - Passou
-      //elegivel para teste parametrico (student ou professor)
 
-      //Arrange
-      const student = makeMember({ id: 's1', type: 'student' });
-      const activeLoans: Loan[] = [
+    it.each([{type: 'student', loans: [
         { memberId: 's1', bookId: 'b1', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
         { memberId: 's1', bookId: 'b2', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
         { memberId: 's1', bookId: 'b3', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
-      ];
-      const repo = mock<LibraryRepository>()
-      repo.findMemberById.mockReturnValue(student);//Mock student
-      repo.findBookById.mockReturnValue(makeBook({ id: 'b4' }));//Mock book
-      repo.findActiveLoansByMemberId.mockReturnValue(activeLoans);//Mock active loans for professor
-      const service = new LibraryService(repo);
-
-      //Act
-      const result = service.borrowBook('p1', 'b4', today);
-
-      //Assert
-      expect(result.success).toBe(false);
-      expect(result.reason).toBe('LIMIT_REACHED');
-
-    });
-    
-    it('Bloqueia empréstimo para professor (tentativa de emprestar mais de 5 livros simultâneos)', () => {//CORRIGIDO - Passou
-      //elegivel para teste parametrico (student ou professor)
+      ]}, 
+      {type: 'professor', loans: [
+        { memberId: 's1', bookId: 'b2', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
+        { memberId: 's1', bookId: 'b1', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
+        { memberId: 's1', bookId: 'b3', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
+        { memberId: 's1', bookId: 'b4', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
+        { memberId: 's1', bookId: 'b5', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
+      ]}] as {type: 'student' | 'professor', loans: Loan[]}[] )
+    ('Bloqueia empréstimo para $type (tentativa de emprestar mais de $loans.length livros simultâneos)', ({type, loans}) => {//OK - Passou
 
       //Arrange
-      const prof = makeMember({ id: 'p1', type: 'professor' });
-      const activeLoans: Loan[] = [
-        { memberId: 'p1', bookId: 'b1', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
-        { memberId: 'p1', bookId: 'b2', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
-        { memberId: 'p1', bookId: 'b3', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
-        { memberId: 'p1', bookId: 'b4', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
-        { memberId: 'p1', bookId: 'b5', borrowedAt: today, dueAt: new Date('2025-06-24T10:00:00Z'), returnedAt: null },
-      ];
+      const member = makeMember({ id: 's1', type: type });
+      const activeLoans: Loan[] = loans;
       const repo = mock<LibraryRepository>()
-      repo.findMemberById.mockReturnValue(prof);//Mock professor
+      repo.findMemberById.mockReturnValue(member);//Mock member
       repo.findBookById.mockReturnValue(makeBook({ id: 'b4' }));//Mock book
       repo.findActiveLoansByMemberId.mockReturnValue(activeLoans);//Mock active loans for professor
       const service = new LibraryService(repo);
 
       //Act
-      const result = service.borrowBook('p1', 'b4', today);
+      const result = service.borrowBook('s1', 'b4', today);
 
       //Assert
       expect(result.success).toBe(false);
       expect(result.reason).toBe('LIMIT_REACHED');
 
     });
-
   });
 
   /**===================================================================
