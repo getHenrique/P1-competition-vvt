@@ -197,8 +197,8 @@ describe('LibraryService', () => {
 
     });
     
-    it('Ao retornar empréstimo, calcula multa de 2 dias atrasado', () => {//OK - Passou
-      // elegivel a teste parametrico
+    it.each([{dueDate: new Date('2025-06-10T10:00:00Z'), daysLate: 2, fee: 400}, {dueDate: new Date('2025-06-13T10:00:00Z'), daysLate: 5, fee: 1600}] as {dueDate: Date, daysLate: number, fee: number}[])
+    ('Ao retornar empréstimo, calcula multa de $daysLate dias atrasado', ({dueDate, daysLate, fee}) => {//OK - Passou
       //Arrange
       const loan: Loan = {
         memberId: 'm1',
@@ -216,43 +216,16 @@ describe('LibraryService', () => {
       const result = service.returnBook(
         'm1',
         'b1',
-        new Date('2025-06-10T10:00:00Z'),//2 dias de atraso
+        dueDate,//2 dias de atraso
       );
 
       //Assert
       expect(result.success).toBe(true);
-      expect(result.daysLate).toBe(2);
-      expect(result.feeInCents).toBe(400);//2 * 200 = 400
+      expect(result.daysLate).toBe(daysLate);
+      expect(result.feeInCents).toBe(fee);
 
     });
-
-    it('Ao retornar empréstimo, calcula multa de 5 dias atrasado', () => {//CORRIGIDO - Passou
-
-      //Arrange
-      const loan: Loan = {
-        memberId: 'm1',
-        bookId: 'b1',
-        borrowedAt: new Date('2025-06-01T10:00:00Z'),
-        dueAt: new Date('2025-06-08T10:00:00Z'),
-        returnedAt: null,
-      };
-      const repo = mock<LibraryRepository>()
-      repo.findActiveLoanByBookId.mockReturnValue(loan);//Mock loan
-      repo.findBookById.mockReturnValue(makeBook());//Mock book
-      const service = new LibraryService(repo);
-
-      //Act
-      const result = service.returnBook(
-        'm1',
-        'b1',
-        new Date('2025-06-13T10:00:00Z'),//5 dias de atraso
-      );
-
-      //Assert
-      expect(result.feeInCents).toBe(1600);//3 * 200 + 2 * 500 = 1600
-
-    });
-
+    
     it('Ao não encontrar empréstimo feito por membro ao tentar retornar livro, devolve razão \'NOT_BORROWER\'', () => {//NOVO - Passou
           
       //Arrange
