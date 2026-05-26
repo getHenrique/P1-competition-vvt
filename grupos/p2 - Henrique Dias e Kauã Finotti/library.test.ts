@@ -29,7 +29,6 @@ describe('LibraryService', () => {
 
     it.each([{type: 'student', dueDaysInMs: 7 * 24 * 60 * 60 * 1000}, {type: 'professor', dueDaysInMs: 14 * 24 * 60 * 60 * 1000}] as {type: 'student' | 'professor', dueDaysInMs: number}[])
     ('Permite $type emprestar livro disponível', ({ type, dueDaysInMs }) => {//OK - Passou
-      //elegivel para teste parametrico (student ou professor)
       
       //Arrange
       const repo = mock<LibraryRepository>();
@@ -68,11 +67,12 @@ describe('LibraryService', () => {
 
     });
 
-    it('Membro tenta emprestar livro que não existe', () => {//NOVO - Passou
+    it.each([{type: 'student'}, {type: 'professor'}] as {type: 'student' | 'professor'}[])
+    ('$type tenta emprestar livro que não existe', ({type}) => {//NOVO - Passou
 
       //Arrange
       const repo = mock<LibraryRepository>();
-      repo.findMemberById.mockReturnValue(makeMember());//Mock student
+      repo.findMemberById.mockReturnValue(makeMember({type: type}));
       repo.findBookById.mockReturnValue(null);//Mock book not found
       const service = new LibraryService(repo);
 
