@@ -166,9 +166,9 @@ describe('LibraryService', () => {
    * returnBook()
    ===================================================================*/
   describe('Método returnBook()', () => {
-  //Estes testes só mudam a quantidade de dias de atraso, podemos fazê-los paramétricos? Como?
 
-    it('Retorno antes da data de vencimento tem tarifa de 0 centavos', () => {//NOVO - Passou
+    it.each([{dueDate: new Date('2025-06-05T10:00:00Z')}, {dueDate: new Date('2025-06-10T10:00:00Z')}] as {dueDate: Date}[])
+    ('Retorno, $dueDate, antes da data de vencimento tem tarifa de 0 centavos', ({dueDate}) => {//NOVO - Passou
       
       //Arrange
       const loan: Loan = {
@@ -187,7 +187,7 @@ describe('LibraryService', () => {
       const result = service.returnBook(
         'm1',
         'b1',
-        new Date('2025-06-05T10:00:00Z'),//0 dias de atraso
+        dueDate,//0 dias de atraso
       );
 
       //Assert
@@ -196,38 +196,9 @@ describe('LibraryService', () => {
       expect(result.feeInCents).toBe(0);
 
     });
-
-    it('Retorno na data de vencimento tem tarifa de 0 centavos', () => {//NOVO - Passou
-      
-      //Arrange
-      const loan: Loan = {
-        memberId: 'm1',
-        bookId: 'b1',
-        borrowedAt: new Date('2025-06-01T10:00:00Z'),
-        dueAt: today,
-        returnedAt: null,
-      };
-      const repo = mock<LibraryRepository>()
-      repo.findActiveLoanByBookId.mockReturnValue(loan);//Mock loan
-      repo.findBookById.mockReturnValue(makeBook());//Mock book
-      const service = new LibraryService(repo);
-
-      //Act
-      const result = service.returnBook(
-        'm1',
-        'b1',
-        today,//0 dias de atraso
-      );
-
-      //Assert
-      expect(result.success).toBe(true);
-      expect(result.daysLate).toBe(0);
-      expect(result.feeInCents).toBe(0);
-
-    });
-
+    
     it('Ao retornar empréstimo, calcula multa de 2 dias atrasado', () => {//OK - Passou
-      
+      // elegivel a teste parametrico
       //Arrange
       const loan: Loan = {
         memberId: 'm1',
