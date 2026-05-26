@@ -27,6 +27,7 @@ describe('LibraryService', () => {
    ===================================================================*/
 
   it('Permite estudante emprestar livro disponível', () => {//OK - Passou
+    //elegivel para teste parametrico (student ou professor)
     
     //Arrange
     const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
@@ -50,7 +51,7 @@ describe('LibraryService', () => {
   });
 
   it('Permite professor emprestar livro disponível', () => {//NOVO - Passou
-    
+    //elegivel para teste parametrico (student ou professor)
     //Arrange
     const fourteenDaysInMs = 14 * 24 * 60 * 60 * 1000;
     const prof = makeMember({ id: 'p1', type: 'professor' });
@@ -93,18 +94,8 @@ describe('LibraryService', () => {
 
   });
 
-  it('Membro com algum overdue Tenta emprestar livro', () => {//NOVO - Passou
-
-    //Arrange
-
-    //Act
-
-    //Assert
-
-  });
-
   it('Bloqueia empréstimo quando livro tem status \'borrowed\'', () => {//OK - Passou
-
+    //elegivel para teste parametrico(available, maintenance ou borrowed)
     //Arrange
     const repo = mock<LibraryRepository>();
     repo.findMemberById.mockReturnValue(makeMember({ id: 'm2', name: 'Bob' }));//Mock student
@@ -130,6 +121,16 @@ describe('LibraryService', () => {
 
   });
 
+  it('Membro com algum overdue Tenta emprestar livro', () => {//NOVO - Passou
+
+    //Arrange
+
+    //Act
+
+    //Assert
+
+  });
+
   it('Bloqueia empréstimo para aluno (tentativa de emprestar mais de 3 livros simultâneos)', () => {//NOVO - Passou
 
     //Arrange
@@ -141,6 +142,7 @@ describe('LibraryService', () => {
   });
   
   it('Bloqueia empréstimo para professor (tentativa de emprestar mais de 3 livros simultâneos)', () => {//CORRIGIDO - Passou
+    //elegivel para teste parametrico (student ou professor)
 
     //Arrange
     const prof = makeMember({ id: 'p1', type: 'professor' });
