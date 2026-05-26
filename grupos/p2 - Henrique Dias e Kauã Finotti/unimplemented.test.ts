@@ -130,3 +130,30 @@ describe('LibraryService', () => {
 
   });
 });
+/*
+    it('Permite professor emprestar livro disponível', () => {//NOVO - Passou
+      //elegivel para teste parametrico (student ou professor)
+      //Arrange
+      const fourteenDaysInMs = 14 * 24 * 60 * 60 * 1000;
+      const prof = makeMember({ id: 'p1', type: 'professor' });
+      const repo = mock<LibraryRepository>();
+      repo.findMemberById.mockReturnValue(prof);//Mock professor
+      repo.findBookById.mockReturnValue(makeBook());//Mock book
+      repo.findActiveLoansByMemberId.mockReturnValue([]);//Mock active loans for student
+      const service = new LibraryService(repo);
+
+      //Act
+      const result = service.borrowBook('m1', 'b1', today);
+
+      //Assert
+      expect(result.success).toBe(true);
+      expect(result.loan?.borrowedAt).toStrictEqual(today);
+      expect(result.loan?.dueAt).toStrictEqual(new Date(today.getTime() + fourteenDaysInMs));
+      expect(result.loan?.memberId).toBe('m1');
+      expect(result.loan?.bookId).toBe('b1');
+      expect(repo.findBookById('b1')?.status).toBe('borrowed');
+
+    });
+     */
+
+    
