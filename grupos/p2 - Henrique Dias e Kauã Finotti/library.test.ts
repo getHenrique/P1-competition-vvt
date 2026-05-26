@@ -340,13 +340,13 @@ describe('LibraryService', () => {
    * getMemberStatus()
    ===================================================================*/
   describe('Método getMemberStatus()', () => {
-    /*
+    
     it('Busca status de um membro e o retorna com sucesso', () => {//NOVO - Falhou
           
       //Arrange
       const repo = mock<LibraryRepository>()
       repo.findMemberById.mockReturnValue(makeMember());//Mock member
-
+      repo.findActiveLoansByMemberId.mockReturnValue([]);//Mock active loans for member
       const service = new LibraryService(repo);
 
       //Act
@@ -359,7 +359,7 @@ describe('LibraryService', () => {
       expect(status.canBorrow).toBe(true);
 
     });
-    */
+    
     it('Buscar status de membro inexistente lança erro', () => {//CORRIGIDO - Passou
 
         //Arrange
