@@ -4,6 +4,14 @@ import { LibraryService } from '../../src/lib/library';
 import type { Book, Loan, Member } from '../../src/lib/domain';
 import type { LibraryRepository } from '../../src/lib/ports';
 
+/**
+ * 
+ * Autores das correções:
+ * - Henrique Dias Albernaz
+ * - Kauã Finotti Rios
+ * 
+ */
+
 const today = new Date('2025-06-10T10:00:00Z');
 
 const makeMember = (overrides: Partial<Member> = {}): Member => ({
@@ -86,7 +94,7 @@ describe('LibraryService', () => {
     });
 
     it.each([{bookStatus: 'maintenance'}, {bookStatus: 'borrowed'}] as {bookStatus: 'maintenance' | 'borrowed'}[])
-    ('Bloqueia empréstimo quando livro tem status $bookStatus', ({bookStatus}) => {//OK - Passou
+    ('Bloqueia empréstimo quando livro tem status $bookStatus', ({bookStatus}) => {//NOVO - Passou
 
       //Arrange
       const repo = mock<LibraryRepository>();
@@ -146,7 +154,7 @@ describe('LibraryService', () => {
       //Arrange
       const member = makeMember({ id: 's1', type: type });
       const activeLoans: Loan[] = loans;
-      const repo = mock<LibraryRepository>()
+      const repo = mock<LibraryRepository>();
       repo.findMemberById.mockReturnValue(member);//Mock member
       repo.findBookById.mockReturnValue(makeBook({ id: 'b4' }));//Mock book
       repo.findActiveLoansByMemberId.mockReturnValue(activeLoans);//Mock active loans for professor
@@ -178,7 +186,7 @@ describe('LibraryService', () => {
         dueAt: new Date('2025-06-10T10:00:00Z'),
         returnedAt: null,
       };
-      const repo = mock<LibraryRepository>()
+      const repo = mock<LibraryRepository>();
       repo.findActiveLoanByBookId.mockReturnValue(loan);//Mock loan
       repo.findBookById.mockReturnValue(makeBook());//Mock book
       const service = new LibraryService(repo);
@@ -198,7 +206,7 @@ describe('LibraryService', () => {
     });
     
     it.each([{dueDate: new Date('2025-06-10T10:00:00Z'), daysLate: 2, fee: 400}, {dueDate: new Date('2025-06-13T10:00:00Z'), daysLate: 5, fee: 1600}] as {dueDate: Date, daysLate: number, fee: number}[])
-    ('Ao retornar empréstimo, calcula multa de $daysLate dias atrasado', ({dueDate, daysLate, fee}) => {//OK - Passou
+    ('Ao retornar empréstimo, calcula multa de $daysLate dias atrasado', ({dueDate, daysLate, fee}) => {//NOVO - Passou
       //Arrange
       const loan: Loan = {
         memberId: 'm1',
@@ -285,7 +293,7 @@ describe('LibraryService', () => {
    ===================================================================*/
   describe('Método getMemberStatus()', () => {
     
-    it('Busca status de um membro e o retorna com sucesso', () => {//NOVO - Falhou
+    it('Busca status de um membro e o retorna com sucesso', () => {//NOVO - PASSOU
           
       //Arrange
       const repo = mock<LibraryRepository>()
