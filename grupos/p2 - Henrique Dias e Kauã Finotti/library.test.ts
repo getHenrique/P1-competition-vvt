@@ -175,15 +175,15 @@ describe('LibraryService', () => {
    ===================================================================*/
   describe('Método returnBook()', () => {
 
-    it.each([{dueDate: new Date('2025-06-05T10:00:00Z')}, {dueDate: new Date('2025-06-10T10:00:00Z')}] as {dueDate: Date}[])
-    ('Retorno, $dueDate, antes da data de vencimento tem tarifa de 0 centavos', ({dueDate}) => {//NOVO - Passou
+    it.each([{dueDate: new Date('2025-06-05T10:00:00Z'), dueDescription: "dias antes da data de vencimento"}, {dueDate: today, dueDescription: "no exato dia da data de vencimento"}] as {dueDate: Date, dueDescription: String}[])
+    ('Retorno $dueDescription tem tarifa de 0 centavos', ({dueDate}) => {//NOVO - Passou
       
       //Arrange
       const loan: Loan = {
         memberId: 'm1',
         bookId: 'b1',
         borrowedAt: new Date('2025-06-01T10:00:00Z'),
-        dueAt: new Date('2025-06-10T10:00:00Z'),
+        dueAt: today,
         returnedAt: null,
       };
       const repo = mock<LibraryRepository>();
@@ -195,7 +195,7 @@ describe('LibraryService', () => {
       const result = service.returnBook(
         'm1',
         'b1',
-        dueDate,//0 dias de atraso
+        dueDate,//considera 0 dias de atraso
       );
 
       //Assert
